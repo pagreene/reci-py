@@ -1,5 +1,6 @@
 import random
 from datetime import date
+from typing import List
 
 # Define seasonal months. The overlaps are intentional.
 winter = {12, 1, 2, 3}
@@ -13,106 +14,144 @@ def month():
     return date.today().month
 
 
+class Ingredient:
+    """Represent an ingredient and its serving size."""
+
+    def __init__(self, name: str, serving: float, serving_units: str):
+        self.name: str = name
+        self.serving: float = serving
+        self.serving_units: str = serving_units
+
+
+class IngredientGrp:
+    """Represent a grouping of ingredients (including one), and a preference."""
+
+    def __init__(self, *options: List[Ingredient], pref: float = 1):
+        self.options: List[Ingredient] = options
+        self.pref: float = pref
+
+    def select(self):
+        return random.choice(self.options)
+
+
+chickpeas = Ingredient("chickpeas", 5, "oz")
+beans = Ingredient("beans", 5, "oz")
+lentils = Ingredient("lentils", 1/3, "cup")
+tofu = Ingredient("tofu", 3.5, "oz")
+walnuts = Ingredient("walnuts", 1, "oz")
+peanuts = Ingredient("peanuts", 1, "oz")
+pine_nut = Ingredient("pine nuts", 1, "oz")
+chia_seeds = Ingredient("chia seeds", 1, "oz")
+sf_seeds = Ingredient("sunflower seeds", 1, "oz")
+pumpkin_seeds = Ingredient("pumpkin seeds", 1, "oz")
+meat_balls = Ingredient("'meat' balls", 1, "serving")
+
+spinach = Ingredient("spinach", 1, "cup")
+broccoli = Ingredient("broccoli", 1, "cup")
+brussel_sprouts = Ingredient("brussel sprouts", 1, "cup")
+artichoke_hearts = Ingredient("artichoke hearts", 1/3, "can")
+green_beans = Ingredient("green beans", 1, "cup")
+peas = Ingredient("peas", 0.5, "cup")
+chard = Ingredient("chard", 1, "cup")
+carrots = Ingredient("carrot", 1, "carrot")
+beets = Ingredient("beets", 1, "beet")
+radishes = Ingredient("radishes", 2.5, "radish")
+zucs = Ingredient("zuc", 1/2, "zuc")
+tomatoes = Ingredient("tomato", 1.5, "tomato")
+asparagus = Ingredient("asparagus", 1/3, "bunch")
+squash = Ingredient("squash", 4, "oz")
+bok_choy = Ingredient("bok choy", 1/3, "bunch")
+cabbage = Ingredient("cabbage", 1/4, "head")
+cauliflower = Ingredient("cauliflower", 1/4, "head")
+celery = Ingredient("celery", 2, "stalks")
+cucumber = Ingredient("cucumber", 1/4, "cucumber")
+corn = Ingredient("corn", 1/2, "ear")
+
+potatoes = Ingredient("potatoes", 1, "medium potato")
+rice = Ingredient("rice", 1/6, "cups")
+bread = Ingredient("bread", 1/10, "loaf")
+tortilla = Ingredient("tortilla", 1, "tortilla")
+pasta = Ingredient("pasta", 2, "oz")
+quinoa = Ingredient("quinoa", 1/4, "cups")
+couscous = Ingredient("couscous", 1/3, "cups")
+bulgar = Ingredient("bulgar", 1/3, "cups")
+barley = Ingredient("barley", 1/2, "cups")
+millet = Ingredient("millet", 1/3, "cups")
+sweet_potatoes = Ingredient("sweet potatoes", 2/3, "potato")
+pizza_crust = Ingredient("pizza crust", 1/8, "crust")
+
+peppers = Ingredient("peppers", 1/2, "pepper")
+onions = Ingredient("onions", 1/4, "onion")
+leek = Ingredient("leek", 1/4, "leek")
+mushrooms = Ingredient("mushrooms", 2.5, "oz")
+chives = Ingredient("chives", 30, "g")
+apples = Ingredient("apples", 1/2, "apple")
+raisins = Ingredient("raisins", 1/4, "cup")
+cheese = Ingredient("cheese", 1.5, "oz")
+
 # Define categories of ingredients and some modifiers that vary by season.
 proteins = [
-    "Chickpeas/Beans/Lentils",
-    "Tofu",
-    "Walnuts/Peanuts",
-    "Pine Nut/Chia Seeds",
-    "Sunflower seeds/Pumpkin Seeds",
-    "'Meat'balls",
+    IngredientGrp([chickpeas, beans, lentils], pref=4),
+    IngredientGrp(tofu, pref=3),
+    IngredientGrp(walnuts, peanuts, pref=2 if month() in winter else 1),
+    IngredientGrp(pine_nuts, chia_seeds),
+    IngredientGrp(sf_seeds, pumpkin_seeds, pref=2 if month() in fall | winter else 0.5),
+    IngredientGrp(meat_balls),
 ]
-proteins_mods = {
-    "Chickpeas/Beans/Lentils": 4,
-    "Tofu": 3,
-    "Sunflower seeds/Pumpkin Seeds": 2 if month() in fall | winter else 0.5,
-    "Walnuts/Peanuts": 2 if month() in winter else 1,
-}
 
 nutrients = [
-    "Spinach",
-    "Broccoli/Brussel Sprouts/Artichoke Hearts",
-    "Green Beans",
-    "Peas",
-    "Chard",
-    "Carrots/Beets",
-    "Radishes",
-    "Zucs",
-    "Tomato",
-    "Asparagus",
-    "Squash",
-    "Bok Choy",
-    "Cabbage",
-    "Cauliflower",
-    "Celery",
-    "Cucumber",
-    "corn",
+    IngredientGrp(spinach, pref=7 if month() in summer else 5),
+    IngredientGrp(broccoli, brussel_sprouts, artichoke_hearts),
+    IngredientGrp(green_beans),
+    IngredientGrp(peas, pref=5 if month() in winter | spring else 3),
+    IngredientGrp(chard, pref=5 if month() in summer else 1),
+    IngredientGrp(carrots, beets, pref=5 if month() in summer else 2),
+    IngredientGrp(radishes, pref=2 if month() in summer else 0.2),
+    IngredientGrp(zucs),
+    IngredientGrp(tomatoes, pref=4 if month() in summer & fall else 1),
+    IngredientGrp(asparagus),
+    IngredientGrp(squash, pref=2 if month() in fall else 0.2),
+    IngredientGrp(bok_choy),
+    IngredientGrp(cabbage, pref=3 if month() in winter & springe else 1),
+    IngredientGrp(cauliflower),
+    IngredientGrp(celery),
+    IngredientGrp(cucumber, pref=2 if month() in summer else 0.5),
+    IngredientGrp(corn, pref=2 if month() in summer else 1),
 ]
-nutrients_mods = {
-    "Spinach": 7 if month() in summer else 5,
-    "Peas": 5 if month() in winter | spring else 3,
-    "Radishes": 2 if month() in summer else 0.2,
-    "Chard": 5 if month() in summer else 1,
-    "Tomato": 4 if month() in summer & fall else 1,
-    "Carrots/Beets": 5 if month() in summer else 2,
-    "Cucumber": 2 if month() in summer else 0.5,
-    "corn": 2 if month() in summer else 1,
-    "Squash": 2 if month() in fall else 0.1,
-}
 
 carbs = [
-    "Potatoes",
-    "Rice",
-    "Bread",
-    "Tortilla",
-    "Pasta",
-    "Quinoa",
-    "Couscous",
-    "Bulgar",
-    "Barley",
-    "Millet",
-    "Sweet Potatoes",
-    "Crust",
+    IngredientGrp(potatoes, pref=2 if month() in summer else 1),
+    IngredientGrp(rice, pref=5),
+    IngredientGrp(bread, pref=3),
+    IngredientGrp(tortilla, pref=2),
+    IngredientGrp(pasta, pref=5),
+    IngredientGrp(quinoa, pref=3),
+    IngredientGrp(couscous),
+    IngredientGrp(bulgar),
+    IngredientGrp(barley),
+    IngredientGrp(millet),
+    IngredientGrp(sweet_potatoes, pref=2 if month() in summer else 1),
+    IngredientGrp(pizza_crust),
 ]
-carbs_mods = {
-    "Rice": 5,
-    "Pasta": 3,
-    "Quinoa": 3,
-    "Tortilla": 2,
-    "Potatoes": 2 if month() in summer else 1,
-    "Sweet Potatoes": 3 if month() in winter else 1,
-}
 
 flare = [
-    "Peppers",
-    "Onions",
-    "Leek",
-    "Green Onion",
-    "Mushrooms",
-    "chives",
-    "Apples",
-    "Raisins",
-    "Cheese",
+    IngredientGrp(peppers),
+    IngredientGrp(onions, pref=3),
+    IngredientGrp(leek),
+    IngredientGrp(green_onion),
+    IngredientGrp(mushrooms, pref=2 if month() in winter else 1),
+    IngredientGrp(chives, pref=3 if month() in spring else 0.2),
+    IngredientGrp(apples, pref=2 if month() in fall else 0.2),
+    IngredientGrp(raisins, pref=1.2 if month() in fall | winter else 0.1),
+    IngredientGrp(cheese, pref=2)
 ]
-flare_mods = {
-    "Onions": 3,
-    "Mushrooms": 2 if month() in winter else 1,
-    "chives": 3 if month() in spring else 0.1,
-    "Apples": 1.5 if month() in fall else 1,
-    "Raisins": 1.2 if month() in fall | winter else 0.2,
-}
 
 
-def get_weighted_selection(options, mods, n=1):
+def get_weighted_selection(options: List[IngredientGrp], n=1):
     """Get a weighted selection based on mods, without replacement."""
 
-    # Make sure I didn't type up any keys wrong.
-    assert (opt_set := set(options)) >= (
-        key_set := set(mods.keys())
-    ), f"Some keys aren't in options: {key_set - opt_set}"
-
     # Make a list of weights based on the mods.
-    weights = [mods.get(option, 1) for option in options]
+    weights = [option.pref for option in options]
     results = []
     for _ in range(n):
         # Remove selected options from the list to ensure no duplicates.
@@ -130,25 +169,25 @@ def get_weighted_selection(options, mods, n=1):
 def select_meal():
     """Select a meal."""
     # Choose 2 proteins or 2 nutrients, and 1 of the other.
-    maybe_double = [(proteins, proteins_mods), (nutrients, nutrients_mods)]
-    random.shuffle(maybe_double)
+    maybe_extra = [proteins, nutrients]
+    random.shuffle(maybe_extra)
 
-    double, single = maybe_double
+    extra, norm = maybe_extra
 
     # Flip a coin to choose some flare.
     add_flare = random.choice([True, True, False])
 
     # Make the selections.
-    num_extra = 2+(double[0] is nutrients)
-    selection = get_weighted_selection(*double, n=num_extra)
-    selection += get_weighted_selection(*single, n=1+(single[0] is nutrients)) + get_weighted_selection(
-        carbs, carbs_mods
-    )
+    num_extra = 3 if extra is nutrients else 2
+    num_norm = 2 if norm is nutrients else 1
+    selection = get_weighted_selection(extra, n=num_extra)
+    selection += get_weighted_selection(norm, n=num_norm) 
+    selection += get_weighted_selection(carbs)
     if add_flare:
-        selection += get_weighted_selection(flare, flare_mods)
+        selection += get_weighted_selection(flare)
 
-    # Make choices on the a/b options.
-    return {random.choice(item.split("/")) for item in selection}
+    # Make choices on the options in each group.
+    return {item.select() for item in selection}
 
 
 def get_sort_key(item):
