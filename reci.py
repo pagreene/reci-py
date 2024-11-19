@@ -1,12 +1,16 @@
 import random
 from datetime import date
-from typing import List
+from typing import List, Set
 
 # Define seasonal months. The overlaps are intentional.
 winter = {12, 1, 2, 3}
 spring = {3, 4, 5}
 summer = {6, 7, 8, 9}
 fall = {8, 9, 10, 11}
+
+
+NUM_MEALS = 2
+NUM_PEOPLE = 4
 
 
 # Get the current month.
@@ -22,16 +26,40 @@ class Ingredient:
         self.serving: float = serving
         self.serving_units: str = serving_units
 
+    def with_serving(self, serving: float) -> "Ingredient":
+        return Ingredient(self.name, serving, self.serving_units)
+
+    def __hash__(self):
+        return hash(self.name)
+
+    def __eq__(self, other):
+        if isinstance(other, Ingredient):
+            return other.name == self.name
+        elif isinstance(other, IngredientGrp):
+            return any(self == option for option in other.options)
+        return False
+
+    def __lt__(self, other):
+        if isinstance(other, Ingredient):
+            return self.name < other.name
+        raise ValueError(f"Cannot compare Ingredient to {type(other)}")
+
+    def __str__(self):
+        return f"{self.name} [{self.serving:.3} {self.serving_units}]"
+
 
 class IngredientGrp:
     """Represent a grouping of ingredients (including one), and a preference."""
 
-    def __init__(self, *options: List[Ingredient], pref: float = 1):
-        self.options: List[Ingredient] = options
+    def __init__(self, *options: Ingredient, pref: float = 1):
+        self.options: List[Ingredient] = list(options)
         self.pref: float = pref
 
-    def select(self):
+    def select(self) -> Ingredient:
         return random.choice(self.options)
+
+    def __hash__(self):
+        return hash(self.options)
 
 
 chickpeas = Ingredient("chickpeas", 5, "oz")
@@ -40,7 +68,7 @@ lentils = Ingredient("lentils", 1/3, "cup")
 tofu = Ingredient("tofu", 3.5, "oz")
 walnuts = Ingredient("walnuts", 1, "oz")
 peanuts = Ingredient("peanuts", 1, "oz")
-pine_nut = Ingredient("pine nuts", 1, "oz")
+pine_nuts = Ingredient("pine nuts", 1, "oz")
 chia_seeds = Ingredient("chia seeds", 1, "oz")
 sf_seeds = Ingredient("sunflower seeds", 1, "oz")
 pumpkin_seeds = Ingredient("pumpkin seeds", 1, "oz")
@@ -91,7 +119,7 @@ cheese = Ingredient("cheese", 1.5, "oz")
 
 # Define categories of ingredients and some modifiers that vary by season.
 proteins = [
-    IngredientGrp([chickpeas, beans, lentils], pref=4),
+    IngredientGrp(chickpeas, beans, lentils, pref=4),
     IngredientGrp(tofu, pref=3),
     IngredientGrp(walnuts, peanuts, pref=2 if month() in winter else 1),
     IngredientGrp(pine_nuts, chia_seeds),
@@ -112,7 +140,7 @@ nutrients = [
     IngredientGrp(asparagus),
     IngredientGrp(squash, pref=2 if month() in fall else 0.2),
     IngredientGrp(bok_choy),
-    IngredientGrp(cabbage, pref=3 if month() in winter & springe else 1),
+    IngredientGrp(cabbage, pref=3 if month() in winter & spring else 1),
     IngredientGrp(cauliflower),
     IngredientGrp(celery),
     IngredientGrp(cucumber, pref=2 if month() in summer else 0.5),
@@ -138,13 +166,25 @@ flare = [
     IngredientGrp(peppers),
     IngredientGrp(onions, pref=3),
     IngredientGrp(leek),
-    IngredientGrp(green_onion),
     IngredientGrp(mushrooms, pref=2 if month() in winter else 1),
     IngredientGrp(chives, pref=3 if month() in spring else 0.2),
     IngredientGrp(apples, pref=2 if month() in fall else 0.2),
     IngredientGrp(raisins, pref=1.2 if month() in fall | winter else 0.1),
     IngredientGrp(cheese, pref=2)
 ]
+
+
+class Selection:
+    def __init__(self, ingredient_grp: IngredientGrp, servings: float):
+        self.ingredient_grp = ingredient_grp
+        self.servings = servings
+
+    def select(self):
+        ingredient = self.ingredient_grp.select()
+        return ingredient.with_serving(self.servings*ingredient.serving)
+
+    def __hash__(self):
+        return hash(self.ingredient_grp)
 
 
 def get_weighted_selection(options: List[IngredientGrp], n=1):
@@ -163,10 +203,10 @@ def get_weighted_selection(options: List[IngredientGrp], n=1):
         # Get a random selection.
         results += random.choices(options, weights=weights)
 
-    return results
+    return [Selection(result, servings=NUM_MEALS*NUM_PEOPLE/n) for result in results]
 
 
-def select_meal():
+def select_meal() -> Set[Ingredient]:
     """Select a meal."""
     # Choose 2 proteins or 2 nutrients, and 1 of the other.
     maybe_extra = [proteins, nutrients]
@@ -194,9 +234,8 @@ def get_sort_key(item):
     """We want to show things in the order of proteins, nutrients, carbs, flare."""
     type_order = [proteins, nutrients, carbs, flare]
     for k, category in enumerate(type_order):
-        # To handle the case of ingredients split by "/", just make the whole list a string.
-        if item in ",".join(category):
-            return (k, item)
+        if item in category:
+            return k, item
 
 
 # Select 3 meals. Just brute-force making the meals use unique ingredients.
@@ -217,12 +256,12 @@ for i in range(3):
         used_ingredients[item] += 1
 
     # Report the result, neatly sorted.
-    ingredients = '\n'.join(sorted(meal, key=get_sort_key))
+    ingredients = '\n'.join(str(item) for item in sorted(meal, key=get_sort_key))
     print(f"Meal {i+1} ({tries} tries):\n{ingredients}")
     print()
 
 grocery_list_str = "\n".join(
-    f"{cnt} {item}"
+    f"{item.with_serving(item.serving*cnt)}" + (f"(used in {cnt} meals)" if cnt > 1 else "")
     for item, cnt in sorted(
         used_ingredients.items(),
         key=lambda key_value_pair: get_sort_key(key_value_pair[0]),
