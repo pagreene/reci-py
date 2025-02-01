@@ -113,10 +113,10 @@ pizza_crust = Ingredient("pizza crust", 1 / 8, "crust")
 peppers = Ingredient("peppers", 1 / 3, "pepper")
 onions = Ingredient("onions", 1 / 4, "onion")
 leek = Ingredient("leek", 1 / 4, "leek")
-mushrooms = Ingredient("mushrooms", 2.5, "oz")
-chives = Ingredient("chives", 30, "g")
+mushrooms = Ingredient("mushrooms", 1, "oz")
+chives = Ingredient("chives", 20, "g")
 apples = Ingredient("apples", 1 / 3, "apple")
-raisins = Ingredient("raisins", 1 / 4, "cup")
+raisins = Ingredient("raisins", 1 / 5, "cup")
 cheese = Ingredient("cheese", 1, "oz")
 
 # Define categories of ingredients and some modifiers that vary by season.
