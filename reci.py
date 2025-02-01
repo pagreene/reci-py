@@ -11,7 +11,7 @@ fall = {8, 9, 10, 11}
 
 
 NUM_MEALS = 2
-NUM_PEOPLE = 4
+NUM_PEOPLE = 3
 
 
 # Get the current month.
@@ -76,22 +76,22 @@ pumpkin_seeds = Ingredient("pumpkin seeds", 1, "oz")
 meat_balls = Ingredient("'meat' balls", 1, "serving")
 
 spinach = Ingredient("spinach", 1, "cup")
-broccoli = Ingredient("broccoli", 1, "cup")
-brussel_sprouts = Ingredient("brussel sprouts", 1, "cup")
+broccoli = Ingredient("broccoli", 1 / 3, "head")
+brussel_sprouts = Ingredient("brussel sprouts", 1 / 4, "lb")
 artichoke_hearts = Ingredient("artichoke hearts", 1 / 3, "can")
 green_beans = Ingredient("green beans", 1, "cup")
 peas = Ingredient("peas", 0.5, "cup")
 chard = Ingredient("chard", 1, "cup")
-carrots = Ingredient("carrot", 1, "carrot")
+carrots = Ingredient("carrot", 1 / 2, "carrot")
 beets = Ingredient("beets", 1, "beet")
-radishes = Ingredient("radishes", 2.5, "radish")
-zucs = Ingredient("zuc", 1 / 2, "zuc")
-tomatoes = Ingredient("tomato", 1.5, "tomato")
+radishes = Ingredient("radishes", 2, "radish")
+zucs = Ingredient("zuc", 1 / 3, "zuc")
+tomatoes = Ingredient("tomato", 1 / 2, "tomato")
 asparagus = Ingredient("asparagus", 1 / 3, "bunch")
-squash = Ingredient("squash", 4, "oz")
+squash = Ingredient("squash", 3, "oz")
 bok_choy = Ingredient("bok choy", 1 / 3, "bunch")
-cabbage = Ingredient("cabbage", 1 / 4, "head")
-cauliflower = Ingredient("cauliflower", 1 / 4, "head")
+cabbage = Ingredient("cabbage", 1 / 6, "head")
+cauliflower = Ingredient("cauliflower", 1 / 5, "head")
 celery = Ingredient("celery", 2, "stalks")
 cucumber = Ingredient("cucumber", 1 / 4, "cucumber")
 corn = Ingredient("corn", 1 / 2, "ear")
@@ -110,14 +110,14 @@ millet = Ingredient("millet", 1 / 3, "cups")
 sweet_potatoes = Ingredient("sweet potatoes", 2 / 3, "potato")
 pizza_crust = Ingredient("pizza crust", 1 / 8, "crust")
 
-peppers = Ingredient("peppers", 1 / 2, "pepper")
+peppers = Ingredient("peppers", 1 / 3, "pepper")
 onions = Ingredient("onions", 1 / 4, "onion")
 leek = Ingredient("leek", 1 / 4, "leek")
 mushrooms = Ingredient("mushrooms", 2.5, "oz")
 chives = Ingredient("chives", 30, "g")
-apples = Ingredient("apples", 1 / 2, "apple")
+apples = Ingredient("apples", 1 / 3, "apple")
 raisins = Ingredient("raisins", 1 / 4, "cup")
-cheese = Ingredient("cheese", 1.5, "oz")
+cheese = Ingredient("cheese", 1, "oz")
 
 # Define categories of ingredients and some modifiers that vary by season.
 proteins = [
